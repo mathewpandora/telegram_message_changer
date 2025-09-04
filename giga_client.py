@@ -1,5 +1,6 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_gigachat.chat_models import GigaChat
+from logger_config import logger
 import os
 from dotenv import load_dotenv
 
@@ -54,20 +55,24 @@ class GigaChatTextCorrector:
         ]
 
     def send_request(self, user_input: str) -> str:
-        """
-        Отправляет текст для коррекции и возвращает исправленную версию
-        """
-        # Очищаем историю перед каждым запросом для избежания контекста
-        self.clear_history()
+        try:
+            """
+            Отправляет текст для коррекции и возвращает исправленную версию
+            """
+            # Очищаем историю перед каждым запросом для избежания контекста
+            self.clear_history()
 
-        # Добавляем сообщение пользователя
-        self.messages.append(HumanMessage(content=user_input))
+            # Добавляем сообщение пользователя
+            self.messages.append(HumanMessage(content=user_input))
 
-        # Отправляем запрос
-        res = self.giga.invoke(self.messages)
-        print(res)
-        # Возвращаем только контент ответа
-        return res.content
+            # Отправляем запрос
+            res = self.giga.invoke(self.messages)
+            print(res)
+            # Возвращаем только контент ответа
+            return res.content
+        except Exception as e:
+            logger.error(f"Ошибка в ответе гиги: {e}")
+            return user_input
 
     def clear_history(self):
         """Очищает историю сообщений, оставляя только системное сообщение"""
