@@ -42,10 +42,10 @@ GIGACHAT_AUTH_KEY=your_gigachat_auth_key
 ### С помощью Docker Compose (рекомендуется)
 
 ```bash
-# Сборка и запуск
+# Сборка и запуск в интерактивном режиме (для авторизации)
 docker-compose up --build
 
-# Запуск в фоновом режиме
+# После авторизации можно запустить в фоновом режиме
 docker-compose up -d --build
 
 # Просмотр логов
@@ -54,6 +54,17 @@ docker-compose logs -f
 # Остановка
 docker-compose down
 ```
+
+**Важно**: При первом запуске контейнер будет ждать авторизации в Telegram. Введите код подтверждения, который придет на ваш телефон.
+
+### Процесс авторизации
+
+1. Запустите контейнер: `docker-compose up --build`
+2. Введите номер телефона в формате +1234567890
+3. Введите код подтверждения из SMS
+4. При необходимости введите пароль двухфакторной аутентификации
+5. После успешной авторизации файл сессии сохранится в папке `sessions/`
+6. Остановите контейнер (Ctrl+C) и запустите в фоновом режиме: `docker-compose up -d`
 
 ### С помощью Docker
 
@@ -66,8 +77,7 @@ docker run -d \
   --name telegram-service \
   --env-file .env \
   -v $(pwd)/logs:/app/logs \
-  -v $(pwd)/my_session.session:/app/my_session.session \
-  -v $(pwd)/session.session:/app/session.session \
+  -v $(pwd)/sessions:/app/sessions \
   telegram-service
 ```
 
@@ -82,7 +92,8 @@ telegram_service/
 ├── docker-compose.yml    # Docker Compose конфигурация
 ├── requirements.txt      # Python зависимости
 ├── .env                  # Переменные окружения (создать)
-└── logs/                 # Папка с логами
+├── logs/                 # Папка с логами
+└── sessions/             # Папка с файлами сессий Telegram
 ```
 
 ## Логи

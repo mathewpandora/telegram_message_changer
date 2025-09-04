@@ -1,14 +1,11 @@
-version: '3.8'
-
 services:
   telegram-service:
     build: .
     container_name: telegram-service
-    restart: unless-stopped
+    restart: "no"
     volumes:
       - ./logs:/app/logs
-      - ./my_session.session:/app/my_session.session
-      - ./session.session:/app/session.session
+      - ./sessions:/app/sessions
     environment:
       - API_ID=${API_ID}
       - API_HASH=${API_HASH}
@@ -18,3 +15,4 @@ services:
       - .env
     stdin_open: true
     tty: true
+    command: python tg_client.py

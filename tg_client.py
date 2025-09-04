@@ -12,7 +12,7 @@ API_ID = int(os.getenv("API_ID"))
 API_HASH = os.getenv("API_HASH")
 PHONE_NUMBER = os.getenv("PHONE_NUMBER")
 
-client = TelegramClient("my_session", API_ID, API_HASH)
+client = TelegramClient("sessions/my_session", API_ID, API_HASH)
 
 
 def change_message(message: str) -> str:

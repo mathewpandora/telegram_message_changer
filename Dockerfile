@@ -12,6 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN mkdir -p logs
+RUN mkdir -p logs sessions && \
+    chmod 755 logs sessions
 
 CMD ["python", "tg_client.py"]
