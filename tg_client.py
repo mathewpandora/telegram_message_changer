@@ -1,5 +1,7 @@
 import asyncio
 import os
+from xml.sax.saxutils import escape
+
 from dotenv import load_dotenv
 from telethon import TelegramClient, events
 from giga_client import GigaChatTextCorrector
@@ -17,16 +19,33 @@ client = TelegramClient("sessions/my_session", API_ID, API_HASH)
 
 def change_message(message: str) -> str:
     logger.info(f"Обработка сообщения: {message}")
-    giga_client = GigaChatTextCorrector()
-    response = giga_client.send_request(message)
-    logger.info(f"Получен ответ от GigaChat: {response}")
-    return response
+    
+    if not message or not message.strip():
+        logger.info("Пустое сообщение, пропускаем обработку")
+        return message
+    
+    if len(message.strip()) < 2:
+        logger.info("Слишком короткое сообщение, пропускаем обработку")
+        return message
+    
+    try:
+        giga_client = GigaChatTextCorrector()
+        response = giga_client.send_request(message)
+        logger.info(f"Получен ответ от GigaChat: {response}")
+        return response
+    except Exception as e:
+        logger.error(f"Ошибка при обработке сообщения: {e}")
+        return message
 
 
 @client.on(events.NewMessage(outgoing=True))
 async def handler(event):
     original = event.raw_text
     logger.info(f"Получено исходящее сообщение: {original}")
+    
+    if not original or not original.strip():
+        logger.info("Сообщение без текста (медиа-контент), пропускаем обработку")
+        return
     
     try:
         modified = change_message(original)
